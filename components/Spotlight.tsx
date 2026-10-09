@@ -3,41 +3,40 @@
 import { m, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import type { Anime } from "@/lib/types";
-import { meta, score } from "./format";
+import { metaLine, scoreText } from "@/lib/format";
 import { Play, Star } from "./icons";
 import { EASE } from "./motion";
 
 /**
- * Cinematic spotlight. The active title's hue is adopted into the page theme
- * and crossfades with the artwork, so the whole interface shifts as the reel
- * advances. Reduced-motion readers get a static crossfade only.
+ * Cinematic spotlight. The active title's hue is adopted into the page theme,
+ * so the interface shifts as the reel advances. Hovering pauses the timer;
+ * reduced-motion readers get a crossfade with no auto-advance.
+ *
+ * All hooks run before the empty guard so the hook order never changes.
  */
 export default function Spotlight({
   items,
-  onOpen,
   onAdopt,
 }: {
   items: Anime[];
-  onOpen: (a: Anime) => void;
   onAdopt: (a: Anime) => void;
 }) {
   const [i, setI] = useState(0);
+  const [held, setHeld] = useState(false);
   const reduce = useReducedMotion();
 
-  // Advance the reel on a slow timer; stop when the reader is interacting.
-  const [held, setHeld] = useState(false);
   useEffect(() => {
-    if (items.length < 2 || held) return;
-    const t = setInterval(() => setI((n) => (n + 1) % items.length), 8000);
+    if (items.length < 2 || held || reduce) return;
+    const t = setInterval(() => setI((n) => (n + 1) % items.length), 9000);
     return () => clearInterval(t);
-  }, [items.length, held]);
+  }, [items.length, held, reduce]);
 
+  const active = items[i] ?? null;
   useEffect(() => {
-    if (items[i]) onAdopt(items[i]);
-  }, [i, items, onAdopt]);
+    if (active) onAdopt(active);
+  }, [active, onAdopt]);
 
-  if (items.length === 0) return null;
-  const a = items[i];
+  if (!active) return null;
 
   return (
     <div
@@ -46,45 +45,47 @@ export default function Spotlight({
       onPointerLeave={() => setHeld(false)}
     >
       <div className="spot-stage">
-        <div className="spot-bg" aria-hidden="true">
+        <div aria-hidden="true">
           {items.map((it, n) => (
             <m.div
               key={it.id}
-              className="spot-bg"
-              style={{ position: "absolute", inset: 0 }}
+              className="spot-layer"
               initial={false}
               animate={{ opacity: n === i ? 1 : 0 }}
-              transition={{ duration: reduce ? 0 : 0.9, ease: EASE }}
+              transition={{ duration: reduce ? 0 : 0.95, ease: EASE }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={it.banner || it.cover} alt="" />
+              <img src={it.art.banner || it.art.cover} alt="" />
             </m.div>
           ))}
         </div>
         <div className="spot-scrim" aria-hidden="true" />
 
         <m.div
-          key={a.id}
+          key={active.id}
           className="spot-copy"
-          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.42, ease: EASE }}
+          transition={{ duration: 0.44, ease: EASE }}
         >
           <span className="spot-tag">Spotlight</span>
-          <h3>{a.title}</h3>
+          <h3>{active.title.display}</h3>
           <div className="spot-meta">
-            {a.score != null && (
+            {active.score != null && (
               <span className="spot-score">
-                <Star size={14} /> {score(a)}
+                <Star size={14} /> {scoreText(active)}
               </span>
             )}
-            {meta(a) && <span>{meta(a)}</span>}
+            {metaLine(active) && <span>{metaLine(active)}</span>}
+            {active.genres.length > 0 && (
+              <span>{active.genres.slice(0, 2).join(" · ")}</span>
+            )}
           </div>
-          {a.synopsis && <p className="spot-desc">{a.synopsis}</p>}
-          <button className="btn btn-solid" onClick={() => onOpen(a)}>
+          {active.synopsis && <p className="spot-desc">{active.synopsis}</p>}
+          <a className="btn btn-solid" href={`/anime/${active.id}`}>
             <Play size={14} />
-            {a.trailerYoutubeId ? "Watch the trailer" : "See details"}
-          </button>
+            {active.trailerId ? "Watch the trailer" : "See details"}
+          </a>
         </m.div>
 
         <div className="spot-thumbs" role="tablist" aria-label="Spotlight titles">
@@ -95,10 +96,10 @@ export default function Spotlight({
               aria-selected={n === i}
               className={n === i ? "spot-thumb on" : "spot-thumb"}
               onClick={() => setI(n)}
-              aria-label={it.title}
+              aria-label={it.title.display}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={it.cover} alt="" loading="lazy" />
+              <img src={it.art.cover} alt="" loading="lazy" />
             </button>
           ))}
         </div>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./providers";
+import Nav, { Foot, TabBar } from "@/components/Chrome";
 
 export const metadata: Metadata = {
   title: "Kitsune — Find what to watch next",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0c0b09",
+  themeColor: "#0b0a08",
   width: "device-width",
   initialScale: 1,
 };
@@ -38,8 +39,12 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
+          <div className="wash" aria-hidden="true" />
           <div className="grain" aria-hidden="true" />
+          <Nav />
           {children}
+          <Foot />
+          <TabBar />
         </Providers>
       </body>
     </html>

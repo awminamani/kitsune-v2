@@ -1,32 +1,35 @@
-import { getTrending, getGenreCollection, getSpotlight, getByGenre } from "@/lib/anilist";
+import { banners, browse, genres } from "@/lib/anilist";
 import type { Anime } from "@/lib/types";
-import Site from "@/components/Site";
+import HomeView from "@/components/HomeView";
 
-// Whole page revalidates every 30 min; per-fetch caches govern the rest.
 export const revalidate = 1800;
 
-// Genre rails on the home page. Short and bounded — one query per genre.
-const FEATURED = ["Action", "Romance", "Fantasy", "Sci-Fi", "Comedy"];
+// Genre rails on the home page. Bounded on purpose — one query per genre.
+const RAILS = ["Action", "Romance", "Fantasy", "Sci-Fi", "Comedy"];
 
-export default async function Page() {
-  const [trending, genres, spotlight] = await Promise.all([
-    getTrending(12).catch(() => []),
-    getGenreCollection().catch(() => [] as string[]),
-    getSpotlight(6).catch(() => []),
+export default async function Home() {
+  const [reel, genreList, trending] = await Promise.all([
+    banners(6).catch(() => [] as Anime[]),
+    genres().catch(() => [] as string[]),
+    browse({ perPage: 14, sort: "TRENDING" })
+      .then((p) => p.items)
+      .catch(() => [] as Anime[]),
   ]);
 
   const rails = await Promise.all(
-    FEATURED.map(async (g) => ({
+    RAILS.map(async (g) => ({
       genre: g,
-      items: await getByGenre(g, 12).catch(() => [] as Anime[]),
+      items: await browse({ genre: g, perPage: 14 })
+        .then((p) => p.items)
+        .catch(() => [] as Anime[]),
     }))
   );
 
   return (
-    <Site
+    <HomeView
+      reel={reel}
+      genres={genreList}
       trending={trending}
-      genres={genres}
-      spotlight={spotlight}
       rails={rails.filter((r) => r.items.length > 0)}
     />
   );
