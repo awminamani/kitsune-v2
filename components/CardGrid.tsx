@@ -1,17 +1,14 @@
 "use client";
 
 import { m } from "framer-motion";
-import type { Anime } from "@/lib/types";
-import AnimeCard from "./AnimeCard";
-import { wave, VIEWPORT } from "./motion";
-import { rise } from "./motion";
+import type { ReactNode } from "react";
+import { rise, wave, VIEWPORT, waveItem } from "./motion";
 
-/** Wave container: children carrying `waveItem` arrive staggered. */
 export function Wave({
   children,
   className,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }) {
   return (
@@ -27,12 +24,11 @@ export function Wave({
   );
 }
 
-/** Single block that rises into view. */
 export function Reveal({
   children,
   className,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }) {
   return (
@@ -48,52 +44,43 @@ export function Reveal({
   );
 }
 
-/** A responsive grid of poster cards. */
 export function CardGrid({
   items,
-  onAdopt,
   priorityCount = 0,
 }: {
-  items: Anime[];
-  onAdopt?: (a: Anime) => void;
+  items: import("@/lib/types").Anime[];
   priorityCount?: number;
 }) {
   return (
     <Wave className="grid">
       {items.map((a, i) => (
-        <AnimeCard
-          key={a.id}
-          anime={a}
-          index={i + 1}
-          onAdopt={onAdopt}
-          priority={i < priorityCount}
-        />
+        <AnimeCard key={a.id} anime={a} index={i + 1} priority={i < priorityCount} />
       ))}
     </Wave>
   );
 }
 
-/** A horizontal rail of poster cards. */
-export function CardRail({
-  items,
-  onAdopt,
-}: {
-  items: Anime[];
-  onAdopt?: (a: Anime) => void;
-}) {
+export function CardRail({ items }: { items: import("@/lib/types").Anime[] }) {
   return (
     <Wave className="rail">
-      {items.map((a) => (
-        <AnimeCard key={a.id} anime={a} onAdopt={onAdopt} />
+      {items.map((a, i) => (
+        <AnimeCard key={a.id} anime={a} index={i + 1} />
       ))}
     </Wave>
   );
 }
 
-/** Placeholder cards shaped exactly like the real ones. */
-export function CardSkeletons({ count, rail = false }: { count: number; rail?: boolean }) {
+import AnimeCard from "./AnimeCard";
+
+export function CardSkeletons({
+  count,
+  rail = false,
+}: {
+  count: number;
+  rail?: boolean;
+}) {
   const items = Array.from({ length: count }).map((_, i) => (
-    <div className="sk" key={i} style={rail ? { width: 178 } : undefined}>
+    <div className="sk" key={i} style={rail ? { width: 172 } : undefined}>
       <div className="sk-art sk-shim" />
       <div className="sk-line sk-shim" />
       <div className="sk-line sk-shim" style={{ width: "56%" }} />

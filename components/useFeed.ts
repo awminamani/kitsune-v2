@@ -3,21 +3,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Anime, BrowseQuery, Page } from "@/lib/types";
 
-/**
- * Infinite catalogue reader.
- *
- * Owns the request sequence so a slow response can never overwrite a newer
- * one, and exposes an explicit `status` so the UI can tell "still loading the
- * first page" apart from "loading page 4 of an existing list".
- */
 export interface FeedState {
   items: Anime[];
   page: number;
   hasNext: boolean;
   total: number | null;
-  /** Loading the first page for the current query. */
   initial: boolean;
-  /** Loading a subsequent page. */
   appending: boolean;
   error: string | null;
   loadMore: () => void;
@@ -45,7 +36,6 @@ export function useFeed(query: BrowseQuery, enabled = true): FeedState {
   const [initial, setInitial] = useState(enabled);
   const [appending, setAppending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const seq = useRef(0);
   const key = toParams(query);
 
@@ -55,12 +45,10 @@ export function useFeed(query: BrowseQuery, enabled = true): FeedState {
       if (append) setAppending(true);
       else setInitial(true);
       setError(null);
-
       try {
         const res = await fetch(`/api/anime?${myKey}&page=${target}`);
         const json = (await res.json()) as Page<Anime> & { error?: string };
-        if (my !== seq.current) return; // superseded
-
+        if (my !== seq.current) return;
         if (json.error) throw new Error(json.error);
         setItems((prev) => (append ? [...prev, ...json.items] : json.items));
         setPage(json.page);
@@ -84,7 +72,6 @@ export function useFeed(query: BrowseQuery, enabled = true): FeedState {
     []
   );
 
-  // Any change to the query restarts the feed from page 1.
   useEffect(() => {
     if (!enabled) return;
     setItems([]);

@@ -2,6 +2,11 @@ import { banners, browse, genres } from "@/lib/anilist";
 import type { Anime } from "@/lib/types";
 import HomeView from "@/components/HomeView";
 
+export const metadata = {
+  title: "Kitsune — Find what to watch next",
+  description: "A cinematic way to browse anime. Search, filter by mood, and explore the catalogue.",
+};
+
 export const revalidate = 1800;
 
 // Genre rails on the home page. Bounded on purpose — one query per genre.

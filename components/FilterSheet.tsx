@@ -6,11 +6,6 @@ import type { BrowseQuery, MediaFormat, Season, SortKey } from "@/lib/types";
 import { FORMAT_OPTIONS, SEASON_OPTIONS, SORT_OPTIONS } from "@/lib/query";
 import { Sliders } from "./icons";
 
-/**
- * Filter sheet. Edits a local draft and commits on "Show results", so the feed
- * does not refetch on every tap. Format / season / sort are single-select;
- * genre is single-select too (AniList's `genre` argument takes one value).
- */
 export default function FilterSheet({
   open,
   current,
@@ -58,72 +53,31 @@ export default function FilterSheet({
           >
             <div className="sheet-grip" aria-hidden="true" />
             <div className="sheet-head">
-              <h3>
-                Refine
-                {active > 0 && (
-                  <span style={{ color: "var(--accent)", fontSize: "0.7em" }}>
-                    {" "}
-                    · {active}
-                  </span>
-                )}
-              </h3>
-              <button className="sec-link" onClick={onClose}>
-                Close
-              </button>
+              <h3>Refine{active > 0 && <span style={{ color: "var(--accent)", fontSize: "0.7em" }}> · {active}</span>}</h3>
+              <button className="sec-link" onClick={onClose}>Close</button>
             </div>
 
             <p className="sheet-label">Genre</p>
             <div className="chips scroll">
-              <button
-                className={!d.genre ? "chip on" : "chip"}
-                onClick={() => set("genre", undefined)}
-              >
-                Any
-              </button>
+              <button className={!d.genre ? "chip on" : "chip"} onClick={() => set("genre", undefined)}>Any</button>
               {genres.map((g) => (
-                <button
-                  key={g}
-                  className={d.genre === g ? "chip on" : "chip"}
-                  onClick={() => toggle("genre", g)}
-                >
-                  {g}
-                </button>
+                <button key={g} className={d.genre === g ? "chip on" : "chip"} onClick={() => toggle("genre", g)}>{g}</button>
               ))}
             </div>
 
             <p className="sheet-label">Format</p>
             <div className="chips">
-              <button
-                className={!d.format ? "chip on" : "chip"}
-                onClick={() => set("format", undefined)}
-              >
-                Any
-              </button>
+              <button className={!d.format ? "chip on" : "chip"} onClick={() => set("format", undefined)}>Any</button>
               {FORMAT_OPTIONS.map((f: MediaFormat) => (
-                <button
-                  key={f}
-                  className={d.format === f ? "chip on" : "chip"}
-                  onClick={() => toggle("format", f)}
-                >
-                  {f}
-                </button>
+                <button key={f} className={d.format === f ? "chip on" : "chip"} onClick={() => toggle("format", f)}>{f}</button>
               ))}
             </div>
 
             <p className="sheet-label">Season</p>
             <div className="chips">
-              <button
-                className={!d.season ? "chip on" : "chip"}
-                onClick={() => set("season", undefined)}
-              >
-                Any
-              </button>
+              <button className={!d.season ? "chip on" : "chip"} onClick={() => set("season", undefined)}>Any</button>
               {SEASON_OPTIONS.map((s: Season) => (
-                <button
-                  key={s}
-                  className={d.season === s ? "chip on" : "chip"}
-                  onClick={() => toggle("season", s)}
-                >
+                <button key={s} className={d.season === s ? "chip on" : "chip"} onClick={() => toggle("season", s)}>
                   {s.charAt(0) + s.slice(1).toLowerCase()}
                 </button>
               ))}
@@ -132,11 +86,7 @@ export default function FilterSheet({
             <p className="sheet-label">Sort by</p>
             <div className="chips">
               {SORT_OPTIONS.map((s: { key: SortKey; label: string }) => (
-                <button
-                  key={s.key}
-                  className={(d.sort ?? "POPULARITY") === s.key ? "chip on" : "chip"}
-                  onClick={() => set("sort", s.key)}
-                >
+                <button key={s.key} className={(d.sort ?? "POPULARITY") === s.key ? "chip on" : "chip"} onClick={() => set("sort", s.key)}>
                   {s.label}
                 </button>
               ))}
@@ -158,12 +108,7 @@ export default function FilterSheet({
             />
 
             <div className="sheet-foot">
-              <button
-                className="btn btn-line"
-                onClick={() => setD({ sort: current.sort ?? "POPULARITY" })}
-              >
-                Reset
-              </button>
+              <button className="btn btn-line" onClick={() => setD({ sort: current.sort ?? "POPULARITY" })}>Reset</button>
               <button className="btn btn-solid" onClick={() => onApply(d)}>
                 <Sliders size={15} />
                 Show results

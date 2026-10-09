@@ -7,20 +7,7 @@ import { metaLine, scoreText } from "@/lib/format";
 import { Play, Star } from "./icons";
 import { EASE } from "./motion";
 
-/**
- * Cinematic spotlight. The active title's hue is adopted into the page theme,
- * so the interface shifts as the reel advances. Hovering pauses the timer;
- * reduced-motion readers get a crossfade with no auto-advance.
- *
- * All hooks run before the empty guard so the hook order never changes.
- */
-export default function Spotlight({
-  items,
-  onAdopt,
-}: {
-  items: Anime[];
-  onAdopt: (a: Anime) => void;
-}) {
+export default function Spotlight({ items }: { items: Anime[] }) {
   const [i, setI] = useState(0);
   const [held, setHeld] = useState(false);
   const reduce = useReducedMotion();
@@ -31,19 +18,11 @@ export default function Spotlight({
     return () => clearInterval(t);
   }, [items.length, held, reduce]);
 
-  const active = items[i] ?? null;
-  useEffect(() => {
-    if (active) onAdopt(active);
-  }, [active, onAdopt]);
-
+  const active = items[i];
   if (!active) return null;
 
   return (
-    <div
-      className="spot"
-      onPointerEnter={() => setHeld(true)}
-      onPointerLeave={() => setHeld(false)}
-    >
+    <div className="spot" onPointerEnter={() => setHeld(true)} onPointerLeave={() => setHeld(false)}>
       <div className="spot-stage">
         <div aria-hidden="true">
           {items.map((it, n) => (
@@ -60,7 +39,6 @@ export default function Spotlight({
           ))}
         </div>
         <div className="spot-scrim" aria-hidden="true" />
-
         <m.div
           key={active.id}
           className="spot-copy"
@@ -72,14 +50,10 @@ export default function Spotlight({
           <h3>{active.title.display}</h3>
           <div className="spot-meta">
             {active.score != null && (
-              <span className="spot-score">
-                <Star size={14} /> {scoreText(active)}
-              </span>
+              <span className="spot-score"><Star size={14} /> {scoreText(active)}</span>
             )}
             {metaLine(active) && <span>{metaLine(active)}</span>}
-            {active.genres.length > 0 && (
-              <span>{active.genres.slice(0, 2).join(" · ")}</span>
-            )}
+            {active.genres.length > 0 && <span>{active.genres.slice(0, 2).join(" · ")}</span>}
           </div>
           {active.synopsis && <p className="spot-desc">{active.synopsis}</p>}
           <a className="btn btn-solid" href={`/anime/${active.id}`}>
@@ -87,7 +61,6 @@ export default function Spotlight({
             {active.trailerId ? "Watch the trailer" : "See details"}
           </a>
         </m.div>
-
         <div className="spot-thumbs" role="tablist" aria-label="Spotlight titles">
           {items.map((it, n) => (
             <button
