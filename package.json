@@ -1,0 +1,27 @@
+{
+  "name": "kitsune-v2",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Kitsune v2 — cinematic anime discovery with a live dynamic theme system.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^14.1.0",
+    "lucide-react": "^1.54.0",
+    "next": "15.5.23",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.2"
+  }
+}

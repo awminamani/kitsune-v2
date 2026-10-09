@@ -1,0 +1,47 @@
+import type { Metadata, Viewport } from "next";
+import "./globals.css";
+import Providers from "./providers";
+
+export const metadata: Metadata = {
+  title: "Kitsune — Find what to watch next",
+  description:
+    "A calm, cinematic way to browse 20,000+ anime. Search, filter by mood, and let the interface take its colour from what you find.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0c0b09",
+  width: "device-width",
+  initialScale: 1,
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <link rel="apple-touch-icon" href="/kitsune.png" />
+      </head>
+      <body>
+        <Providers>
+          <div className="grain" aria-hidden="true" />
+          {children}
+        </Providers>
+      </body>
+    </html>
+  );
+}
